@@ -25,8 +25,14 @@ class Client extends EventEmitter {
         delete this.options.host;
         delete this.options.port;
       }
-      this.socket = net.connect(this.options);
+      this.socket = net.connect({allowHalfOpen: true, ...this.options});
       this.socket.on('data', this.parser.parse.bind(this.parser));
+      this.socket.on('end', () => {
+        // 触发end事件
+        this.emit('end');
+        // 用户侧没有关闭写端，则默认关闭
+        !this.socket.writableEnded && this.options.autoEnd !== false && this.socket.end();
+      });
       this.socket.on('error', (e) => {
         this.listenerCount('error') > 0 && this.emit('error', e);
       });
