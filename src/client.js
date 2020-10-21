@@ -34,12 +34,12 @@ class Client extends EventEmitter {
   }
   send(data) {
     this.initOnce();
-    this.socket.write(packet(typeof data === 'string' ? data : JSON.stringify(data)));
+    this.socket.write(data);
     return this;
   }
   end(data) {
     this.initOnce();
-    this.socket.end(packet(typeof data === 'string' ? data : JSON.stringify(data)));
+    this.socket.end(data);
   }
 }
 module.exports = {

@@ -97,11 +97,14 @@ class FSM {
     }
 }
 
-function packet(data) {
+function seq() {
+   return ~~(Math.random() * Math.pow(2, 31))
+}
+function packet(data, sequnce) {
     const bufferData = Buffer.from(data);
     const startFlagLength = Buffer.from([PACKET_START]).byteLength;
     const endFlagLength = Buffer.from([PACKET_END]).byteLength;
-    const seq = ~~(Math.random() * Math.pow(2, 31));
+    const seq = sequnce || seq();
     let buffer = Buffer.allocUnsafe(startFlagLength + TOTAL_LENGTH + SEQ_LEN);
     buffer[0] = 0x3;
     buffer.writeUIntBE(TOTAL_LENGTH + SEQ_LEN + bufferData.byteLength, 1, TOTAL_LENGTH);
@@ -161,4 +164,5 @@ class Parser {
 module.exports = {
     Parser,
     packet,
+    seq,
 };

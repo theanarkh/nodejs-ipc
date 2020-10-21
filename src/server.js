@@ -2,7 +2,7 @@ const fs = require('fs');
 const net = require('net');
 const { EventEmitter } = require('events');
 const os = require('os');
-const { Parser, packet  } = require('./lib/protocol');
+const { Parser } = require('./lib/protocol');
 const { port, path } = require('./config');
 
 // Client代表一个和server建立连接的客户端
@@ -12,7 +12,7 @@ class Client extends EventEmitter {
     this.options = options;
   }
   send(data) {
-    this.options.client.write(packet(data));
+    this.options.client.write(data);
   }
   end(data) {
     this.options.client.end(data);
