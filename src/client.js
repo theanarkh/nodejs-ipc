@@ -1,7 +1,7 @@
 const net = require('net');
 const os = require('os');
 const { EventEmitter } = require('events');
-const { Parser, packet } = require('./lib/protocol');
+const { Parser } = require('./lib/protocol');
 const { port, path } = require('./config');
 
 class Client extends EventEmitter {
