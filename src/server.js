@@ -2,7 +2,7 @@ const fs = require('fs');
 const net = require('net');
 const { EventEmitter } = require('events');
 const os = require('os');
-const { Parser } = require('./lib/protocol');
+const { FSM } = require('./lib/protocol');
 const { port, path } = require('./config');
 
 // Client代表一个和server建立连接的客户端
@@ -39,12 +39,12 @@ class Server extends EventEmitter {
       this.server = net.createServer({allowHalfOpen: true}, (client) => {
         const _client = new Client({client});
         typeof connectionListener === 'function' && connectionListener(_client);
-        const parser = new Parser({
+        const fsm = new FSM({
             cb: function(packet) {
               _client.emit('message', packet);
             }
         })
-        client.on('data', parser.parse.bind(parser));
+        client.on('data', fsm.run.bind(fsm));
         client.on('end', () => {
           // 触发end事件
           _client.emit('end');

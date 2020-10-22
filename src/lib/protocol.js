@@ -19,7 +19,7 @@ class Packet {
         return this[field];
     }
 }
-// 解析器状态
+// 状态集
 const PARSE_STATE = {
   PARSE_INIT: 0,
   PARSE_HEADER: 1,
@@ -27,7 +27,7 @@ const PARSE_STATE = {
   PARSE_END: 3,
 };
 
-class FSM {
+class StateSwitcher {
     constructor(options) {
         this.options = options;
     }
@@ -106,11 +106,11 @@ function packet(data, sequnce) {
     return buffer;
 }
 
-class Parser {
+class FSM {
     constructor(options) {
         this.options = options;
         // 状态处理机，定义了状态转移集合
-        this.fsm = new FSM({cb: options.cb});
+        this.stateSwitcher = new StateSwitcher({cb: options.cb});
         // 当前状态
         this.state = PARSE_STATE.PARSE_INIT;
         // 结束状态
@@ -119,7 +119,7 @@ class Parser {
         this.buffer = null;
     }
 
-    parse(data) {
+    run(data) {
         // 没有数据或者解析结束了直接返回
         if (this.state === this.endState || !data || !data.length) {
             return;
@@ -129,7 +129,7 @@ class Parser {
         // 还没结束，并且还有数据可以处理则继续执行
         while(this.state !== this.endState && this.buffer && this.buffer.length) {
             // 执行状态处理函数，返回[下一个状态, 剩下的数据]
-            const result = this.fsm[this.state](this.buffer);
+            const result = this.stateSwitcher[this.state](this.buffer);
             // 如果下一个状态是NEED_MORE_DATA则说明需要更多的数据才能继续解析，并保持当前状态
             if (result[0] === NEED_MORE_DATA) {
                 return;
@@ -142,7 +142,7 @@ class Parser {
 }
 
 module.exports = {
-    Parser,
+    FSM,
     packet,
     seq,
 };

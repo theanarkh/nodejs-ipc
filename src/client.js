@@ -1,7 +1,7 @@
 const net = require('net');
 const os = require('os');
 const { EventEmitter } = require('events');
-const { Parser } = require('./lib/protocol');
+const { FSM } = require('./lib/protocol');
 const { port, path } = require('./config');
 
 class Client extends EventEmitter {
@@ -9,7 +9,7 @@ class Client extends EventEmitter {
     super();
     this.options = { ...options };
     this.socket = null;
-    this.parser = new Parser({
+    this.fsm = new FSM({
         cb: (packet) => {
             this.emit('message', packet);
         }
@@ -26,7 +26,7 @@ class Client extends EventEmitter {
         delete this.options.port;
       }
       this.socket = net.connect({allowHalfOpen: true, ...this.options});
-      this.socket.on('data', this.parser.parse.bind(this.parser));
+      this.socket.on('data', this.fsm.run.bind(this.fsm));
       this.socket.on('end', () => {
         // 触发end事件
         this.emit('end');
