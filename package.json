@@ -1,6 +1,6 @@
 {
   "name": "nodejs-local-ipc",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "实现nodejs中兄弟进程的通信",
   "main": "src/index.js",
   "directories": {
