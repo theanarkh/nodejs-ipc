@@ -1,4 +1,5 @@
-const { Client, packet, seq, RequestManager } = require('../../');
+const { Client, RequestManager } = require('../../src');
+const { packet, seq } = require('tiny-application-layer-protocol');
 const requestManager = new RequestManager({timeout: 3000});
 const client = new Client({port: 80, path: '/tmp/unix.sock'});
 const _seq = seq(); 

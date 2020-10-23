@@ -1,7 +1,7 @@
 const net = require('net');
 const os = require('os');
 const { EventEmitter } = require('events');
-const { FSM } = require('./lib/protocol');
+const { FSM } = require('tiny-application-layer-protocol');
 const { port, path } = require('./config');
 
 class Client extends EventEmitter {

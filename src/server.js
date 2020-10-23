@@ -2,7 +2,7 @@ const fs = require('fs');
 const net = require('net');
 const { EventEmitter } = require('events');
 const os = require('os');
-const { FSM } = require('./lib/protocol');
+const { FSM } = require('tiny-application-layer-protocol');
 const { port, path } = require('./config');
 
 // Client代表一个和server建立连接的客户端

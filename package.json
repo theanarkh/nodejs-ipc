@@ -1,11 +1,12 @@
 {
   "name": "nodejs-local-ipc",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "实现nodejs中兄弟进程的通信",
-  "main": "index.js",
+  "main": "src/index.js",
   "directories": {
     "test": "test"
   },
+  "files": ["src"],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/theanarkh/nodejs-ipc/issues"
   },
-  "homepage": "https://github.com/theanarkh/nodejs-ipc#readme"
+  "homepage": "https://github.com/theanarkh/nodejs-ipc#readme",
+  "dependencies": {
+    "tiny-application-layer-protocol": "^1.0.0"
+  }
 }
