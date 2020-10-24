@@ -13,7 +13,8 @@ class Client extends EventEmitter {
         cb: (packet) => {
             this.emit('message', packet);
         }
-    })
+    });
+    this.options.preConnect === true && this.initOnce();
   }
   initOnce() {
     if (!this.socket) {
