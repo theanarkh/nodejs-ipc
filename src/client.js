@@ -17,8 +17,8 @@ class Client extends EventEmitter {
   }
   initOnce() {
     if (!this.socket) {
-      if (os.platform() === 'win32') {
-        !~~this.options.port && (this.options.port = port);
+      if (os.platform() === 'win32' || this.options.isRPC) {
+        !~~this.options.port && (this.options.port = this.options.isRPC ? 80 : port);
         delete this.options.path;
       } else {
         !this.options.path && (this.options.path = path); 

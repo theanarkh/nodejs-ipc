@@ -6,7 +6,9 @@
   "directories": {
     "test": "test"
   },
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,6 +28,6 @@
   },
   "homepage": "https://github.com/theanarkh/nodejs-ipc#readme",
   "dependencies": {
-    "tiny-application-layer-protocol": "^1.0.0"
+    "tiny-application-layer-protocol": "^1.0.1"
   }
 }

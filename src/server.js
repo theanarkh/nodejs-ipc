@@ -22,6 +22,10 @@ class Client extends EventEmitter {
 class Server extends EventEmitter {
     constructor(options, connectionListener) {
       super();
+      if (typeof options === 'function') {
+        options = {};
+        connectionListener = options;
+      }
       this.options = { ...options };
       // 根据平台处理参数
       if (os.platform() === 'win32') {
