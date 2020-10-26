@@ -26,6 +26,11 @@ class RequestManager {
             this.del(key);
             context.cb(data);
         }
+    }
+    execAll(data) {
+        for (const [key] of Object.entries(this.map)) {
+            this.exec(key, data);
+        }
     } 
     startPollTimeout() {
         this.timerId = setTimeout(() => {

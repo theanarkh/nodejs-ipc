@@ -7,46 +7,31 @@ const { port, path } = require('./config');
 class Client extends EventEmitter {
   constructor(options) {
     super();
-    this.options = { ...options };
-    this.socket = null;
-    this.fsm = new FSM({
-        cb: (packet) => {
-            this.emit('message', packet);
-        }
+    this.options = this.formatOptions(options);
+    const socket = net.connect(this.options);
+    socket.on('error', (error) => {
+      console.error(error);
     });
-    this.options.preConnect === true && this.initOnce();
-  }
-  initOnce() {
-    if (!this.socket) {
-      if (os.platform() === 'win32' || this.options.isRPC) {
-        !~~this.options.port && (this.options.port = this.options.isRPC ? 80 : port);
-        delete this.options.path;
-      } else {
-        !this.options.path && (this.options.path = path); 
-        delete this.options.host;
-        delete this.options.port;
+    socket.send = socket.write;
+    const fsm = new FSM({
+      cb: (packet) => {
+        socket.emit('message', packet);
       }
-      this.socket = net.connect({allowHalfOpen: true, ...this.options});
-      this.socket.on('data', this.fsm.run.bind(this.fsm));
-      this.socket.on('end', () => {
-        // 触发end事件
-        this.emit('end');
-        // 用户侧没有关闭写端，则默认关闭
-        !this.socket.writableEnded && this.options.autoEnd !== false && this.socket.end();
-      });
-      this.socket.on('error', (e) => {
-        this.listenerCount('error') > 0 && this.emit('error', e);
-      });
+    });
+    socket.on('data', fsm.run.bind(fsm));
+    return socket; 
+  }
+  formatOptions(_options) {
+    const options = { ..._options };
+    if (os.platform() === 'win32' || options.isRPC) {
+      !~~options.port && (options.port = options.isRPC ? 80 : port);
+      delete options.path;
+    } else {
+      !options.path && (options.path = path); 
+      delete options.host;
+      delete options.port;
     }
-  }
-  send(data) {
-    this.initOnce();
-    this.socket.write(data);
-    return this;
-  }
-  end(data) {
-    this.initOnce();
-    this.socket.end(data);
+    return options; 
   }
 }
 module.exports = {

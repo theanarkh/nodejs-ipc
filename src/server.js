@@ -5,66 +5,47 @@ const os = require('os');
 const { FSM } = require('tiny-application-layer-protocol');
 const { port, path } = require('./config');
 
-// Client代表一个和server建立连接的客户端
-class Client extends EventEmitter {
-  constructor(options) {
-    super();
-    this.options = options;
-  }
-  send(data) {
-    this.options.client.write(data);
-  }
-  end(data) {
-    this.options.client.end(data);
-  }
-}
-
 class Server extends EventEmitter {
     constructor(options, connectionListener) {
       super();
       if (typeof options === 'function') {
-        options = {};
-        connectionListener = options;
-      }
-      this.options = { ...options };
-      // 根据平台处理参数
-      if (os.platform() === 'win32') {
-        !~~this.options.port && (this.options.port = port);
-        delete this.options.path;
+        options = {
+          connectionListener,
+        };
       } else {
-        !this.options.path && (this.options.path = path); 
-        delete this.options.host;
-        delete this.options.port;
-        fs.existsSync(this.options.path) && fs.unlinkSync(this.options.path);
-        process.on('exit', () => {
-          fs.existsSync(this.options.path) && fs.unlinkSync(this.options.path);
-        });
+        options = { ...options, connectionListener };
       }
-      this.server = net.createServer({allowHalfOpen: true}, (client) => {
-        const _client = new Client({client});
-        typeof connectionListener === 'function' && connectionListener(_client);
+      this.options = this.formatOptions(options);
+      return net.createServer({allowHalfOpen: this.options.allowHalfOpen === true}, (client) => {
+        client.send = client.write;
         const fsm = new FSM({
             cb: function(packet) {
-              _client.emit('message', packet);
+              client.emit('message', packet);
             }
         })
         client.on('data', fsm.run.bind(fsm));
-        client.on('end', () => {
-          // 触发end事件
-          _client.emit('end');
-          // 用户侧没有关闭写端，则默认关闭
-          !client.writableEnded && this.options.autoEnd !== false && client.end();
-        });
         client.on('error', (error) => {
-          _client.listenerCount('error') > 0 && _client.emit('error', error);
+          console.error(error);
         });
-      });
-      this.server.listen(this.options, () => {
-        this.emit('listen');
-      });
-      this.server.on('error', (error) => {
-        this.listenerCount('error') > 0 && this.emit('error', error);
-      });
+        typeof this.options.connectionListener === 'function' && this.options.connectionListener(client);
+      }).listen(this.options);
+    }
+    formatOptions(_options) {
+      const options = { ..._options };
+      // 根据平台处理参数
+      if (os.platform() === 'win32') {
+        !~~options.port && (options.port = port);
+        delete options.path;
+      } else {
+        !options.path && (options.path = path); 
+        delete options.host;
+        delete options.port;
+        fs.existsSync(options.path) && fs.unlinkSync(options.path);
+        process.on('exit', () => {
+          fs.existsSync(options.path) && fs.unlinkSync(options.path);
+        });
+      }
+      return options;
     }
 }
 

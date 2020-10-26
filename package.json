@@ -1,6 +1,6 @@
 {
   "name": "nodejs-i-p-c",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "使用自定义的应用层协议，实现nodejs进程间通信",
   "main": "src/index.js",
   "directories": {
