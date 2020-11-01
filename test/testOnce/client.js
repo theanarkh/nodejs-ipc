@@ -1,7 +1,7 @@
-const { Client } = require('../../src');
+const { IPCClient } = require('../../src');
 const { packet, seq } = require('tiny-application-layer-protocol');
-const client = new Client({port: 80, path: '/tmp/unix.sock'})
+const client = new IPCClient();
 client.end(packet('hello', seq()));
-client.on('message', function(res) {
+client.on('data', function(res) {
   console.log('receive', res);
 })

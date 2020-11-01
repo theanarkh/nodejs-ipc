@@ -1,4 +1,5 @@
+const os = require('os');
+
 module.exports = {
-    path: '/tmp/unix.sock',
-    port: '12345',
+    path: os.platform() === 'win32' ? '\\\\?\\pipe\\ipc' : '/tmp/unix.sock',
 };
