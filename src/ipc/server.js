@@ -13,12 +13,12 @@ class Server extends EventEmitter {
       } else {
         options = { ...options, connectionListener };
       }
+      this.options = { path, ...options };
       try {
-        fs.existsSync(options.path) && fs.unlinkSync(options.path);
+        fs.existsSync(this.options.path) && fs.unlinkSync(this.options.path);
       } catch(e) {
 
       }
-      this.options = { path, ...options };
       return net.createServer({allowHalfOpen: this.options.allowHalfOpen, pauseOnConnect: this.options.pauseOnConnect}, (client) => {
         client.on('error', (error) => {
           console.error(error);
